@@ -1,0 +1,21 @@
+spring:
+  main:
+    allow-circular-references: true
+  application:
+    name: reggie_take_out
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql:///reggie
+    username: root
+    password: 1234
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: ASSIGN_ID
+reggie:
+  path: D:\
+
+

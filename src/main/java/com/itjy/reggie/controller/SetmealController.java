@@ -14,6 +14,8 @@ import com.itjy.reggie.entity.Setmeal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -80,6 +82,7 @@ public class SetmealController {
     }
 
     @DeleteMapping
+    @CacheEvict(value = "setmealCache", allEntries = true)
     public R<String> delete(@RequestParam List<Long> ids) {
         setmealService.removeWithDish(ids);
 
@@ -87,9 +90,11 @@ public class SetmealController {
     }
 
     @GetMapping("/list")
-    public R<List<Setmeal>> getSetmealList(Long categoryId) {
+    @Cacheable(value = "setmealCache", key = "#setmeal.categoryId + '_' + #setmeal.status" )
+    public R<List<Setmeal>> getSetmealList(Setmeal setmeal) {
         LambdaQueryWrapper<Setmeal> lqw = new LambdaQueryWrapper<>();
-        lqw.eq(Setmeal::getCategoryId,categoryId);
+        lqw.eq(setmeal.getCategoryId() != null, Setmeal::getCategoryId,setmeal.getCategoryId());
+        lqw.eq (setmeal.getStatus() != null, Setmeal::getStatus,1);
         List<Setmeal> list = setmealService.list(lqw);
         return R.success(list);
     }
